@@ -1,4 +1,4 @@
-name: Gateway CI Pipeline
+name: Gateway CI Pipeline.
 
 on:
   push:
