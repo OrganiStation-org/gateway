@@ -15,7 +15,7 @@ jobs:
       pull-requests: write
     uses: OrganiStation-org/shared-workflows/.github/workflows/reusable-ci.yaml@main
     with:
-      image_name: gateway-service
+      image_name: gateway
       sonar_project_key: organistation-gateway
       sonar_org: "organistation-org"
       language: "node"
