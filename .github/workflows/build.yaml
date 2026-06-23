@@ -2,7 +2,7 @@ name: Gateway CI Pipeline
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ develop, main ]
   pull_request:
     branches: [ main ]
 
