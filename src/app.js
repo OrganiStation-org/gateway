@@ -115,39 +115,41 @@ app.use('/api', createProxyMiddleware({
         return null;
     },
     changeOrigin: true,
+    // 3 minutes for AI operations (PDF ingestion takes time)
+    proxyTimeout: 180000,
+    timeout: 180000,
     pathRewrite: (path, req) => {
         if (path.startsWith('/auth') || path.startsWith('/users') || path.startsWith('/roles') || path.startsWith('/permissions')) {
-            // Keep unchanged since /auth/login, /users etc. map directly in auth-service
             return path;
         }
         if (path.startsWith('/ai')) {
-            // Rewrite /ai/query -> /api/query
             return path.replace('/ai', '/api');
         }
         if (path.startsWith('/hr')) {
-            // Rewrite /hr/employees -> /api/employees
             return path.replace('/hr', '/api');
         }
         if (path.startsWith('/projects')) {
-            // Rewrite /projects/projects -> /api/projects
             return path.replace('/projects', '/api');
         }
         if (path.startsWith('/tickets')) {
-            // Rewrite /tickets -> /api/tickets
             return path.replace('/tickets', '/api');
         }
         if (path.startsWith('/finance')) {
-            // Rewrite /finance/expenses -> /api/expenses
             return path.replace('/finance', '/api');
         }
         return path;
     },
     onError: (err, req, res) => {
-        console.error('[Gateway Proxy Error]', err);
-        res.status(502).json({
-            status: 'error',
-            message: 'Target service is currently offline or unreachable.'
-        });
+        console.error('[Gateway Proxy Error]', err.message);
+        // Always return JSON so frontend doesn't get parse errors
+        if (!res.headersSent) {
+            res.status(502).json({
+                status: 'error',
+                message: err.code === 'ECONNRESET' || err.code === 'ETIMEDOUT'
+                    ? 'Service timed out. Please try again.'
+                    : 'Target service is currently offline or unreachable.'
+            });
+        }
     }
 }));
 
