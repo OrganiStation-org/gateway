@@ -51,7 +51,7 @@ const authenticateToken = (req, res, next) => {
     jwt.verify(token, JWT_SECRET, (err, decoded) => {
         if (err) {
             console.warn(`[Gateway] Invalid token for request to ${req.url}: ${err.message}`);
-            return res.status(403).json({
+            return res.status(401).json({
                 status: 'error',
                 message: 'Invalid or expired access token.'
             });
